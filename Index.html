@@ -1,90 +1,39 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <base target="_top">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIMAJAR - Sistem Jurnal Mengajar</title>
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="https://i.ibb.co.com/hJQvnntz/Simajar-logo.png">
     
-    <?!= include('Stylesheet'); ?>
+    <style>
+        /* Mengatur halaman agar full layar tanpa scrollbar ganda */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #f8f9fa; /* Warna background sementara loading */
+        }
+        
+        /* Mengatur bingkai iframe agar memenuhi layar */
+        iframe {
+            display: block;
+            width: 100%;
+            height: 100vh; /* 100% Viewport Height */
+            border: none;
+        }
+    </style>
 </head>
 <body>
 
-  <div id="loadingOverlay" class="d-none position-fixed top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center" style="z-index: 9999;">
-    <div class="spinner-border text-primary" role="status"></div>
-  </div>
+    <iframe 
+        src="https://script.google.com/macros/s/AKfycbx6nTju-vyGQpyjlWvs_MzBE9SrEFzDpJQTfiOq9kPbfJEHl21OXl75O0MI1bRyO6Gb/exec"
+        allow="camera; microphone; fullscreen; autoplay; clipboard-write"
+        title="SIMAJAR App">
+    </iframe>
 
-  <div id="section-landing" class="auth-container">
-    <div class="landing-card row g-0">
-      <div class="col-md-5 bg-primary text-white d-flex flex-column align-items-center justify-content-center p-5 text-center">
-        <h1 class="fw-bold mb-3">SIMAJAR</h1>
-        <p>Sistem Manajemen Jurnal & Absensi Sekolah Modern</p>
-      </div>
-      <div class="col-md-7 p-5 bg-white">
-        <h3 class="fw-bold mb-4">Login Guru</h3>
-        <form onsubmit="handleLogin(event)">
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" id="loginId" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" id="loginPass" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 py-2">Masuk Aplikasi</button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div id="mainApp" class="d-none d-flex">
-    
-    <div class="bg-dark text-white p-3 d-flex flex-column" style="width: 250px; min-height: 100vh;">
-      <a href="#" class="text-white text-decoration-none fs-4 fw-bold mb-4 px-2">SIMAJAR</a>
-      <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link active" onclick="switchPage('dashboard')"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-        </li>
-        <li class="nav-item mb-2">
-          <a href="#" class="nav-link text-white" onclick="switchPage('dataGuru')"><i class="bi bi-person-badge me-2"></i> Data Guru</a>
-        </li>
-        <li class="nav-item mb-2">
-            <a href="#" class="nav-link text-white" onclick="switchPage('dataSiswa')"><i class="bi bi-people me-2"></i> Data Siswa</a>
-        </li>
-        <hr class="text-secondary">
-        <li class="nav-item mb-2">
-            <a href="#" class="nav-link text-white" onclick="switchPage('pengaturan')"><i class="bi bi-gear me-2"></i> Pengaturan</a>
-        </li>
-      </ul>
-      <div class="dropdown">
-        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-          <img id="navFoto" src="https://via.placeholder.com/32" width="32" height="32" class="rounded-circle me-2">
-          <strong id="navUserName">User</strong>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-          <li><a class="dropdown-item" href="#" onclick="switchPage('pengaturan')">Profile</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#" onclick="logout()">Sign out</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="flex-grow-1 bg-light p-4" style="height: 100vh; overflow-y: auto;">
-      
-      <div class="d-flex justify-content-between align-items-center mb-4 d-md-none">
-          <span class="fw-bold">SIMAJAR Mobile</span>
-          <button class="btn btn-dark btn-sm"><i class="bi bi-list"></i></button>
-      </div>
-
-      <?!= include('page'); ?>
-
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <?!= include('JavaScript'); ?>
 </body>
 </html>
