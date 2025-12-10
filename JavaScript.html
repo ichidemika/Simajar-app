@@ -1,0 +1,155 @@
+<script>
+// GLOBAL VARS
+let currentUser = null;
+let myChart = null;
+
+// =======================
+// NAVIGASI & INIT
+// =======================
+function switchPage(pageId) {
+    // Sembunyikan semua page
+    document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('d-none'));
+    // Hapus active class di sidebar
+    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+    
+    // Tampilkan page tujuan
+    const target = document.getElementById('page-' + pageId);
+    if(target) target.classList.remove('d-none');
+    
+    // Logic khusus per halaman
+    if(pageId === 'dashboard') loadDashboardData();
+    if(pageId === 'pengaturan') loadPengaturan();
+}
+
+function logout() {
+    currentUser = null;
+    document.getElementById('mainApp').classList.add('d-none');
+    document.getElementById('section-landing').classList.remove('d-none');
+}
+
+// =======================
+// LOGIN LOGIC
+// =======================
+function handleLogin(e) {
+    e.preventDefault();
+    const u = document.getElementById('loginId').value;
+    const p = document.getElementById('loginPass').value;
+    
+    // Tampilkan loading (opsional)
+    
+    google.script.run.withSuccessHandler(res => {
+        if(res.status === 'SUCCESS') {
+            currentUser = res.data;
+            document.getElementById('section-landing').classList.add('d-none');
+            document.getElementById('mainApp').classList.remove('d-none');
+            
+            // Set data sidebar
+            document.getElementById('navUserName').innerText = currentUser.nama;
+            document.getElementById('navFoto').src = currentUser.foto;
+            
+            switchPage('dashboard');
+        } else {
+            alert('Login Gagal! Periksa Username/Password.');
+        }
+    }).loginUser(u, p);
+}
+
+// =======================
+// DASHBOARD LOGIC
+// =======================
+function loadDashboardData() {
+    // Set data diri di dashboard
+    if(currentUser) {
+        document.getElementById('dashSapaNama').innerText = currentUser.nama;
+        document.getElementById('dashNama').innerText = currentUser.nama;
+        document.getElementById('dashNIP').innerText = "NIP. " + currentUser.nip;
+        document.getElementById('dashJabatan').innerText = currentUser.jabatan;
+        document.getElementById('dashFoto').src = currentUser.foto;
+    }
+
+    // Ambil statistik dari server
+    google.script.run.withSuccessHandler(stats => {
+        document.getElementById('statSiswa').innerText = stats.siswa;
+        document.getElementById('statGuru').innerText = stats.guru;
+        document.getElementById('statJurnal').innerText = stats.jurnal;
+        document.getElementById('statHadir').innerText = stats.hadir;
+        
+        renderChart(stats);
+    }).getDashboardStats();
+}
+
+function renderChart(stats) {
+    const ctx = document.getElementById('dashboardChart').getContext('2d');
+    if (myChart) myChart.destroy();
+
+    myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Siswa', 'Guru', 'Jurnal', 'Hadir'],
+            datasets: [{
+                label: 'Data Sekolah',
+                data: [stats.siswa, stats.guru, stats.jurnal, stats.hadir],
+                backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+}
+
+// =======================
+// PENGATURAN (UPLOAD FOTO)
+// =======================
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById('previewFotoProfil').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function loadPengaturan() {
+    if(currentUser) {
+        document.getElementById('setNama').value = currentUser.nama;
+        document.getElementById('previewFotoProfil').src = currentUser.foto;
+    }
+}
+
+function simpanPengaturan(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSimpanProfil');
+    const oriText = btn.innerHTML;
+    btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
+
+    const pass = document.getElementById('setPass').value;
+    const fileInput = document.getElementById('inputFotoProfil');
+    
+    if (fileInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const fileData = {
+                name: fileInput.files[0].name,
+                mimeType: fileInput.files[0].type,
+                bytes: ev.target.result.split(',')[1]
+            };
+            execUpdate(pass, fileData, btn, oriText);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        execUpdate(pass, null, btn, oriText);
+    }
+}
+
+function execUpdate(pass, fileData, btn, oriText) {
+    google.script.run.withSuccessHandler(res => {
+        btn.innerHTML = oriText; btn.disabled = false;
+        if(res.sukses) {
+            alert('Profil berhasil diupdate! Silakan login ulang.');
+            logout();
+        } else {
+            alert('Gagal: ' + res.pesan);
+        }
+    }).updateUserProfile(currentUser.id, pass, fileData);
+}
+</script>
